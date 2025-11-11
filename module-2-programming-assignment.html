@@ -27,10 +27,53 @@ console.log("The stack data structure");
 //    implementation does not use the prototype (see project).
 
 function Stack() {
-  // properties and methods go here
+  var items = []; 
+
+  this.push = function(element) {
+    items.push(element);
+  };
+
+  this.pop = function() {
+    return items.pop();
+  };
+
+  this.peek = function() {
+    return items[items.length - 1];
+  };
+
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+  this.size = function() {
+    return items.length;
+  };
+
+  this.clear = function() {
+    items = [];
+  };
 }
 
 // 2. Write a simple test program that shows your stack works.
+
+var stack = new Stack();
+
+console.log("Is stack empty?", stack.isEmpty()); 
+
+stack.push(10);
+stack.push(20);
+stack.push(30);
+
+console.log("Top of stack:", stack.peek()); 
+console.log("Stack size:", stack.size());  
+
+console.log("Popped:", stack.pop());        
+console.log("Top now:", stack.peek());     
+
+console.log("Is stack empty?", stack.isEmpty()); 
+
+stack.clear();
+console.log("Stack cleared. Empty now?", stack.isEmpty()); 
 
 
 
@@ -53,10 +96,66 @@ console.log("Solving problems using stacks");
 //    For example, if the number is 5 the remainder is 1 and the number in the
 //    next iteration should be 2 (5/2 rounded down).
 
+var num = parseInt(prompt("Enter a decimal number:"), 10);
+
+while (num > 0) {
+  var remainder = num % 2;
+  console.log(remainder);
+  num = Math.floor(num / 2);
+}
+
 // 2. The algorithm in (1) can be used to convert a decimal number to a binary
 //    number but there is one issue. What is the problem?
 
+// the problem is that the binary number is backwards
+
 // 3. Solve the problem in (2) using a stack.
+function Stack() {
+  var items = [];
+
+  this.push = function(element) {
+    items.push(element);
+  };
+
+  this.pop = function() {
+    return items.pop();
+  };
+
+  this.peek = function() {
+    return items[items.length - 1];
+  };
+
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+   this.size = function() {
+    return items.length;
+  };
+
+    this.clear = function() {
+    items = [];
+}
+}
+
+var num = parseInt(prompt("Enter a decimal number:"), 10);
+var stack = new Stack();
+
+// Push all remainders on the stack
+var n = num;
+while (n > 0) {
+  stack.push(n % 2);
+  n = Math.floor(n / 2);
+}
+
+// Pop items to display the binary number in correct order
+var binary = "";
+while (!stack.isEmpty()) {
+  binary += stack.pop();
+}
+
+console.log("Decimal:", num);
+console.log("Binary:", binary);
 
 
 
@@ -69,6 +168,10 @@ console.log("The queue data structure");
 //    where a stack is appropriate and one example where a queue is
 //    appropriate (that has not yet been discussed in class).
 
+// a stack is where the most recent item added is the first one taken out. Picture a stack of plates: you put a plate on top, and you remove from the top.
+// a queue is where The first item added is the first item taken out. Picture a line of people waiting; the person who arrives first gets served first.
+// example where you should use a stack: an undo feature in a document editor, the last thing done will be the first thing gone.
+// example where you would use a queue: If seven computers send documents to the same printer, the first document queued is the first one printed. New print jobs go to the end of the line.
 
 
 //------------------//
