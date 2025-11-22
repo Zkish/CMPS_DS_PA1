@@ -184,12 +184,70 @@ console.log("Creating a queue");
 //    implementation does not use the prototype (see project).
 
 function Queue() {
-  // properties and methods go here
+  var items = [];  // no prototype array
+
+  // add element to the back of the queue
+  this.enqueue = function(element) {
+    items.push(element);
+  };
+
+  // remove and return the element at the front
+  this.dequeue = function() {
+    return items.shift();
+  };
+
+  // return the first element without removing it
+  this.front = function() {
+    return items[0];
+  };
+
+  // return true if queue is empty
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+  // return the number of items in the queue
+  this.size = function() {
+    return items.length;
+  };
+
+  //return a string representation 
+  this.print = function() {
+    console.log(items.toString());
+  };
 }
 
 // 2. Write a simple test program that shows your queue works.
+// Create a queue
 
+var q = new Queue();
 
+// test enqueue
+console.log("Enqueueing A, B, C...");
+q.enqueue("A");
+q.enqueue("B");
+q.enqueue("C");
+q.print(); // A,B,C
+
+// test front()
+console.log("Front element:", q.front()); // A
+
+// test dequeue
+console.log("Dequeued:", q.dequeue()); // A
+q.print(); // B,C
+
+// test size
+console.log("Queue size:", q.size()); // 2
+
+// test isEmpty
+console.log("Is queue empty?", q.isEmpty()); // false
+
+// dequeue remaining items
+console.log("Dequeued:", q.dequeue()); // B
+console.log("Dequeued:", q.dequeue()); // C
+
+// queue should now be empty
+console.log("Is queue empty?", q.isEmpty()); // true
 
 //--------------------//
 // The priority queue //
@@ -213,24 +271,84 @@ function PriorityQueue() {
     // we need to create a queue element that stores the priority as well
     var queueElement = new QueueElement(element, priority);
 
-    // insert into priority queue (difficult part)
-    // note that this should be a min priority queue, meaning a lower value
-    // gets priority over a higher value
-    // ...
-  }
+    // insert into priority queue (min-priority queue)
+    var inserted = false;
 
-  // this is a helper function that is useful for printing
+    for (var i = 0; i < items.length; i++) {
+      if (queueElement.priority < items[i].priority) {
+        items.splice(i, 0, queueElement);
+        inserted = true;
+        break;
+      }
+    }
+
+    if (!inserted) {
+      items.push(queueElement);
+    }
+  };
+
+  // remove and return the element with the highest priority (lowest number)
+  this.dequeue = function() {
+    return items.shift();
+  };
+
+  // return the item at the front without removing it
+  this.front = function() {
+    return items[0];
+  };
+
+  // return true if queue is empty
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+  // return number of items
+  this.size = function() {
+    return items.length;
+  };
+
+  // helper function to print contents
   this.print = function() {
     for (var i = 0; i < items.length; i++) {
       console.log(`${items[i].element} - ${items[i].priority}`);
     }
   };
 
-  // add the other methods as well
-  // ...
 }
 
 // 2. Write a simple test that makes sure the priority queue works as expected.
+
+// ----- Test Program -----
+
+var pq = new PriorityQueue();
+
+console.log("Enqueueing items...");
+pq.enqueue("Clean room", 3);
+pq.enqueue("Do homework", 1);
+pq.enqueue("Feed cats", 2);
+pq.enqueue("Watch TV", 5);
+
+console.log("\nCurrent queue (element - priority):");
+pq.print();   // should be in priority order: 1, 2, 3, 5
+
+console.log("\nFront element:");
+console.log(pq.front());   // should be Do homework (1)
+
+console.log("\nDequeuing elements...");
+console.log(pq.dequeue()); // Do homework (1)
+console.log(pq.dequeue()); // Feed cats (2)
+
+console.log("\nQueue after two dequeues:");
+pq.print();
+
+console.log("\nQueue size:", pq.size());
+console.log("Is queue empty?", pq.isEmpty());
+
+console.log("\nDequeuing remaining items...");
+console.log(pq.dequeue()); // Clean room (3)
+console.log(pq.dequeue()); // Watch TV (5)
+
+console.log("\nIs queue empty now?", pq.isEmpty());
 
 
 
@@ -247,22 +365,36 @@ console.log("The circular queue - Hot Potato");
 function hotPotato(nameList, num) {
   // create a queue to store the names
   // ...
+  const queue = [];
 
   // add the names to the queue
   // ...
+  for (let i = 0; i < nameList.length; i++) {
+    queue.push(nameList[i]);
+  }
 
-  // while there is more that one name in the queue
-  // dequeue and enqueue a name num times
-  // ...
-  // then dequeue one more time, which is the participant that is ejected
-  // ...
-  // /while (end of while loop)
+ // while there is more than one person left
+  while (queue.length > 1) {
+    // pass the "potato" num times
+    for (let i = 0; i < num; i++) {
+      // dequeue front, enqueue to back
+      queue.push(queue.shift());
+    }
 
-  // the person that remains in the queue wins
-  // ...
+    // eject the person holding the potato
+    const eliminated = queue.shift();
+    console.log(`${eliminated} was eliminated from the game.`);
+  }
+
+  // last remaining person is the winner
+  return queue[0];
 }
 
 // 2. Test the code in (1).
+
+const players = ["Eris", "Darkness", "Kasuma", "Aqua", "Megamine"];
+const winner = hotPotato(players, 7);
+console.log("The winner is:", winner);
 
 
 
