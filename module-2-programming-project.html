@@ -23,6 +23,22 @@
 console.log("Project");
 
 // 1. Implement the stack data structure using the prototype.
+function Stack() {
+  this.items = [];
+}
+
+Stack.prototype.push = function(element) {
+  this.items.push(element);
+};
+
+Stack.prototype.pop = function() {
+  if (this.items.length === 0) return null;
+  return this.items.pop();
+};
+
+Stack.prototype.isEmpty = function() {
+  return this.items.length === 0;
+};
 
 // 2. It is possible to use a stack to check if the number of parentheses in a
 //    string is balanced, meaning there are as many opening parentheses as
@@ -32,13 +48,62 @@ console.log("Project");
 //    pop from the stack.
 
 function isBalanced(str) {
-  // check the parentheses in str
+  var stack = new Stack();
+
+  for (var i = 0; i < str.length; i++) {
+    var ch = str[i];
+
+    if (ch === '(') {
+      stack.push(ch);
+    } else if (ch === ')') {
+      if (stack.isEmpty()) {
+        return false;
+      }
+      stack.pop();
+    }
+  }
+
+  return stack.isEmpty();
 }
 
 // 3. Write a simple test program that shows your implementation in the
 //    previous question works.
 
+console.log(isBalanced("(())"));   
+console.log(isBalanced("(()())"));      
+console.log(isBalanced("(()"));         
+console.log(isBalanced(")("));          
+console.log(isBalanced("())(()"));      
+
+
 // 4. Implement the queue data structure using the prototype.
+function Queue() {
+  var items = [];
+
+  this.enqueue = function(element) {
+    items.push(element);
+  };
+
+  this.dequeue = function() {
+    return items.shift();
+  };
+
+  this.front = function() {
+    return items[0];
+  };
+
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+  this.size = function() {
+    return items.length;
+  };
+
+  this.print = function() {
+    console.log(items.toString());
+  };
+}
 
 // 5. Create a queue that stores edibles, that can be either fruits or
 //    vegetables. Use the constructor below to create the edible and store a
@@ -54,15 +119,52 @@ function Edible(name, isFruit) {
 
 // ... put your code here ...
 
+// Create the queue
+var edibleQueue = new Queue();
+
+edibleQueue.enqueue(new Edible("Apple", true));
+edibleQueue.enqueue(new Edible("Banana", true));
+edibleQueue.enqueue(new Edible("Grapes", true));
+
+
+edibleQueue.enqueue(new Edible("Carrot", false));
+edibleQueue.enqueue(new Edible("Broccoli", false));
+edibleQueue.enqueue(new Edible("Spinach", false));
+
+// Output the queue
+console.log("Edible Queue Contents:");
+while (!edibleQueue.isEmpty()) {
+  console.log(edibleQueue.dequeue().toString());
+}
+
+
 // 6. Create two more queues: one for fruits and one for vegetables. For this
 //    question, only create them (and leave them empty).
+var fruitQueue = new Queue();
+var vegetableQueue = new Queue();
 
 // 7. Dequeue all the elements from the edible queue and enqueue them in the
 //    appropriate queue, either for fruits or vegetables.
+while (!edibleQueue.isEmpty()) {
+  var item = edibleQueue.dequeue();
+
+  if (item.isFruit) {
+    fruitQueue.enqueue(item);
+  } else {
+    vegetableQueue.enqueue(item);
+  }
+}
 
 // 8. Print the final contents to the console, showing that your code works.
+console.log("Fruit Queue:");
+while (!fruitQueue.isEmpty()) {
+  console.log(fruitQueue.dequeue().toString());
+}
 
-
+console.log("Vegetable Queue:");
+while (!vegetableQueue.isEmpty()) {
+  console.log(vegetableQueue.dequeue().toString());
+}
 
 </script>
 </head>
