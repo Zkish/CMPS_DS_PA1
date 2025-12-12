@@ -23,21 +23,177 @@
 console.log("Project");
 
 // 1. Implement the ArrayList using the prototype.
+// 1. ArrayList implementation using prototype
+function ArrayList() {
+  this.data = [];
+  this.length = 0;
+}
+
+// Add an element at the end
+ArrayList.prototype.add = function(element) {
+  this.data[this.length] = element;
+  this.length++;
+};
+
+// Get element at index
+ArrayList.prototype.get = function(index) {
+  if (index < 0 || index >= this.length) return null;
+  return this.data[index];
+};
+
+// Remove element at index
+ArrayList.prototype.removeAt = function(index) {
+  if (index < 0 || index >= this.length) return null;
+  const removed = this.data[index];
+  for (let i = index; i < this.length - 1; i++) {
+    this.data[i] = this.data[i + 1];
+  }
+  this.length--;
+  this.data.length = this.length; // optional: shrink array
+  return removed;
+};
+
+// 2. Create a non-sorted random array
+function createNonSortedRandomArray(size) {
+  const arr = new ArrayList();
+  
+  // Step 1: Fill array with 1..size
+  for (let i = 1; i <= size; i++) {
+    arr.add(i);
+  }
+
+  // Step 2: Shuffle using Fisher-Yates algorithm
+  for (let i = size - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    // Swap arr[i] and arr[j]
+    const temp = arr.get(i);
+    arr.data[i] = arr.get(j);
+    arr.data[j] = temp;
+  }
+
+  return arr;
+}
 
 // 2. Complete the createNonSortedRandomArray(size) below by returning an
 //    ArrayList with the numbers 1, 2, ..., size in random order.
 //    NOTE: there are multiple ways to achieve this.
 
 function createNonSortedRandomArray(size) {
-  // ...
+  const arr = new ArrayList();
+
+  // Step 1: Fill array with numbers 1..size
+  for (let i = 1; i <= size; i++) {
+    arr.add(i);
+  }
+
+  // Step 2: Shuffle using Fisher-Yates algorithm
+  for (let i = size - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    // Swap arr[i] and arr[j]
+    const temp = arr.get(i);
+    arr.data[i] = arr.get(j);
+    arr.data[j] = temp;
+  }
+
+  return arr;
 }
 
 // 3. Implement the Quick Sort algorithm and test your code with the function
 //    you wrote for (2).
+// Quick Sort implementation for ArrayList
+function quickSortArrayList(arr, left = 0, right = arr.length - 1) {
+  if (left < right) {
+    const pivotIndex = partition(arr, left, right);
+    quickSortArrayList(arr, left, pivotIndex - 1);
+    quickSortArrayList(arr, pivotIndex + 1, right);
+  }
+  return arr;
+}
+
+function partition(arr, left, right) {
+  const pivot = arr.get(right); // choose last element as pivot
+  let i = left - 1;
+
+  for (let j = left; j < right; j++) {
+    if (arr.get(j) <= pivot) {
+      i++;
+      // Swap arr[i] and arr[j]
+      const temp = arr.get(i);
+      arr.data[i] = arr.get(j);
+      arr.data[j] = temp;
+    }
+  }
+
+  // Swap pivot into correct position
+  const temp = arr.get(i + 1);
+  arr.data[i + 1] = arr.get(right);
+  arr.data[right] = temp;
+
+  return i + 1;
+}
+
+// Example usage:
+const randomArray = createNonSortedRandomArray(10);
+
+console.log("Before sorting:");
+for (let i = 0; i < randomArray.length; i++) {
+  console.log(randomArray.get(i));
+}
+
+quickSortArrayList(randomArray);
+
+console.log("After sorting:");
+for (let i = 0; i < randomArray.length; i++) {
+  console.log(randomArray.get(i));
+}
 
 // 4. Implement searching using the prototype.
 
+ArrayList.prototype.indexOf = function(element) {
+  for (let i = 0; i < this.length; i++) {
+    if (this.get(i) === element) {
+      return i; // return first index where element is found
+    }
+  }
+  return -1; // not found
+};
+
 // 5. Implement the binary search algorithm and test your code.
+
+ArrayList.prototype.binarySearch = function(element) {
+  let left = 0;
+  let right = this.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const midVal = this.get(mid);
+
+    if (midVal === element) {
+      return mid;
+    } else if (midVal < element) {
+      left = mid + 1;
+    } else {
+      right = mid - 1;
+    }
+  }
+
+  return -1; // not found
+};
+
+// EXAMPLE USAGE OF 4 and 5:
+const arr = createNonSortedRandomArray(10);
+
+
+// Linear search
+console.log("Index of 5:", arr.indexOf(5));
+
+// Sort first
+quickSortArrayList(arr);
+
+
+// Binary search (requires sorted array)
+console.log("Index of 5 after sorting:", arr.binarySearch(5));
+
 
 // The following set of steps come from an earlier homework.
 // The following text is from the all the Amendments in the Bill of Rights.
@@ -57,6 +213,28 @@ var textArray = text.split(" ");
 
 // 8. Use sorting and searching to find out whether the word 'country' appears
 //    in the amendments. You should use the code you wrote above.
+
+// 6 - 8 code:
+
+const amendmentsList = new ArrayList();
+for (let i = 0; i < textArray.length; i++) {
+  amendmentsList.add(textArray[i]);
+}
+
+// Step 2: Sort the ArrayList
+quickSortArrayList(amendmentsList);
+
+// Step 3: Search for the words using binary search
+const wordsToCheck = ["president", "state", "country"];
+
+wordsToCheck.forEach(word => {
+  const index = amendmentsList.binarySearch(word);
+  if (index !== -1) {
+    console.log(`The word '${word}' appears in the amendments.`);
+  } else {
+    console.log(`The word '${word}' does NOT appear in the amendments.`);
+  }
+});
 
 
 
