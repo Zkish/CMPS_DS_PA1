@@ -31,31 +31,48 @@ function Set() {
   this.add = function(value) {
     // add new item to the set
     // ...
+        if (!items.hasOwnProperty(value)) {
+      items[value] = value;
+      return true;
+    }
+    return false;
   };
 
   this.delete = function(value) {
     // remove item from the set
     // ...
+     if (items.hasOwnProperty(value)) {
+      delete items[value];
+      return true;
+    }
+    return false;
   };
 
   this.has = function(value) {
     // return true if the value exists in the set, false otherwise
     // ...
+    return items.hasOwnProperty(value);
+
   };
 
   this.clear = function() {
     // remove all the items from the set
     // ...
+     items = {};
   };
 
   this.size = function() {
     // returns the number of items in the set
     // ...
+    return Object.keys(items).length;
   };
 
   this.values = function() {
     // returns an array of all items in the set
     // ...
+    return Object.keys(items).map(function(key) {
+      return items[key];
+    });
   };
 }
 
@@ -67,12 +84,50 @@ function Set() {
 console.log("Set operations");
 
 // 1. Implement the union set function in Set above.
+ this.union = function(otherSet) {
+    let unionSet = new Set();
+    let thisValues = this.values();
+    let otherValues = otherSet.values();
 
+    thisValues.forEach(v => unionSet.add(v));
+    otherValues.forEach(v => unionSet.add(v));
+
+    return unionSet;
+  };
 // 2. Implement the intersection set function in Set above.
+ this.intersection = function(otherSet) {
+    let intersectionSet = new Set();
+    let thisValues = this.values();
+
+    thisValues.forEach(v => {
+      if (otherSet.has(v)) {
+        intersectionSet.add(v);
+      }
+    });
+
+    return intersectionSet;
+  };
 
 // 3. Implement the set difference function in Set above.
+ this.difference = function(otherSet) {
+    let differenceSet = new Set();
+    let thisValues = this.values();
+
+    thisValues.forEach(v => {
+      if (!otherSet.has(v)) {
+        differenceSet.add(v);
+      }
+    });
+
+    return differenceSet;
+  };
 
 // 4. Implement the subset function in Set above.
+ this.subset = function(otherSet) {
+    let thisValues = this.values();
+
+    return thisValues.every(v => otherSet.has(v));
+  };
 
 
 
@@ -92,41 +147,53 @@ function Dictionary() {
   this.set = function(key, value) {
     // add a new key-value pair to the dictionary
     // ...
+     items[key] = value;
   };
 
   this.delete = function(key) {
     // delete a key-value pair
     // ...
+    if (items.hasOwnProperty(key)) {
+      delete items[key];
+      return true;
+    }
+    return false;
   };
 
   this.has = function(key) {
     // return true if key is in the dictionary, false otherwise
     // ...
+     return items.hasOwnProperty(key);
   };
 
   this.get = function(key) {
     // return the value that matches key
     // ...
+      return this.has(key) ? items[key] : undefined;
   };
 
   this.clear = function() {
     // remove all key-value pairs
     // ...
+    items = {};
   };
 
   this.size = function() {
     // return the number of key-value pairs
     // ...
+     return Object.keys(items).length;
   };
 
   this.keys = function() {
     // return an array of all the keys
     // ...
+     return Object.keys(items);
   };
 
   this.values = function() {
     // return an array of all the values
     // ...
+      return Object.keys(items).map(key => items[key]);
   };
 
   this.getItems = function() {
@@ -136,7 +203,44 @@ function Dictionary() {
 
 // 2. Write some tests that show that your code works.
 
+console.log("=== DICTIONARY TESTS ===");
 
+let dict = new Dictionary();
+
+// Test set()
+dict.set("name", "Zach");
+dict.set("age", 27);
+dict.set("city", "Pittsburgh");
+
+console.log(dict.getItems());
+// { name: 'Zach', age: 27, city: 'Pittsburgh' }
+
+// Test has()
+console.log(dict.has("name"));  // true
+console.log(dict.has("email")); // false
+
+// Test get()
+console.log(dict.get("age"));   // 27
+
+// Test size()
+console.log(dict.size());       // 3
+
+// Test keys()
+console.log(dict.keys());       // ["name", "age", "city"]
+
+// Test values()
+console.log(dict.values());     // ["Zach", 27, "Pittsburgh"]
+
+// Test delete()
+console.log(dict.delete("age"));  // true
+console.log(dict.delete("email")); // false
+
+console.log(dict.keys());       // ["name", "city"]
+
+// Test clear()
+dict.clear();
+console.log(dict.size());       // 0
+console.log(dict.getItems());   // {}
 
 //----------------//
 // The hash table //
@@ -293,15 +397,21 @@ function HashTable() {
   this.put = function(key, value) {
     // add or update a new item
     // ...
+     var position = loseloseHashCode(key);
+    table[position] = value;
   };
 
   this.remove = function(key) {
     // remove an item
     // ...
+    var position = loseloseHashCode(key);
+    table[position] = undefined;
   };
 
   this.get = function(key) {
     // return the value that matches key
+    var position = loseloseHashCode(key);
+    return table[position];
   };
 
   this.print = function() {
@@ -316,14 +426,198 @@ function HashTable() {
 
 // 2. Write some tests that show that your code works.
 
+console.log("=== BASIC HASH TABLE TESTS ===");
+
+let ht = new HashTable();
+
+ht.put("name", "Zach");
+ht.put("age", "27");
+ht.put("job", "Developer");
+
+console.log("Get name:", ht.get("name")); // Zach
+console.log("Get age:", ht.get("age"));   // 27
+
+ht.print();
+// Example output:
+// 6: Zach
+// 1: 27
+// 33: Developer
+
+ht.remove("age");
+console.log("After remove age:", ht.get("age")); // undefined
+
+
 // 3. Modify your implementation to use separate chaining (for linked list, see
 //    above) for resolving collisions. We also need ValuePair, which is provided
 //    above.
+
+//Valuepair 
+// function ValuePair(key, value) {
+//   this.key = key;
+//   this.value = value;
+
+//   this.toString = function() {
+//     return "[" + this.key + " - " + this.value + "]";
+//   };
+// }
+
+// linkedlist implementation 
+function LinkedList() {
+  function Node(element) {
+    this.element = element;
+    this.next = null;
+  }
+
+  var head = null;
+  var length = 0;
+
+  this.append = function(element) {
+    var node = new Node(element);
+    if (head === null) {
+      head = node;
+    } else {
+      var current = head;
+      while (current.next) current = current.next;
+      current.next = node;
+    }
+    length++;
+  };
+
+  this.remove = function(element) {
+    if (!head) return false;
+
+    if (head.element === element) {
+      head = head.next;
+      length--;
+      return true;
+    }
+
+    var prev = head;
+    var current = head.next;
+
+    while (current) {
+      if (current.element === element) {
+        prev.next = current.next;
+        length--;
+        return true;
+      }
+      prev = current;
+      current = current.next;
+    }
+    return false;
+  };
+
+  this.getHead = function() {
+    return head;
+  };
+
+  this.isEmpty = function() {
+    return length === 0;
+  };
+}
+
+// updated hash table using seperate for chaining
+
+function HashTable() {
+  var table = [];
+
+  function loseloseHashCode(key) {
+    var hash = 0;
+    for (var i = 0; i < key.length; i++) {
+      hash += key.charCodeAt(i);
+    }
+    return hash % 37;
+  }
+
+  this.put = function(key, value) {
+    var position = loseloseHashCode(key);
+
+    if (!table[position]) {
+      table[position] = new LinkedList();
+    }
+
+    // Insert ValuePair
+    table[position].append(new ValuePair(key, value));
+  };
+
+  this.get = function(key) {
+    var position = loseloseHashCode(key);
+    var linkedList = table[position];
+    if (!linkedList) return undefined;
+
+    var current = linkedList.getHead();
+    while (current) {
+      if (current.element.key === key) {
+        return current.element.value;
+      }
+      current = current.next;
+    }
+    return undefined;
+  };
+
+  this.remove = function(key) {
+    var position = loseloseHashCode(key);
+    var linkedList = table[position];
+    if (!linkedList) return false;
+
+    var current = linkedList.getHead();
+    while (current) {
+      if (current.element.key === key) {
+        linkedList.remove(current.element);
+        return true;
+      }
+      current = current.next;
+    }
+    return false;
+  };
+
+  this.print = function() {
+    for (var i = 0; i < table.length; i++) {
+      if (table[i] !== undefined) {
+        var current = table[i].getHead();
+        var result = "";
+
+        while (current) {
+          result += current.element.toString() + " ";
+          current = current.next;
+        }
+
+        console.log(i + ": " + result);
+      }
+    }
+  };
+}
+
+
+//tests for chaining seperate
+console.log("SEPARATE CHAINING TESTS");
+
+let ht2 = new HashTable();
+
+// Force collisions (same hash)
+ht2.put("abc", 111);
+ht2.put("acb", 222);
+ht2.put("bac", 333);
+
+ht2.print();
+
+console.log("Get abc:", ht2.get("abc"));
+console.log("Get acb:", ht2.get("acb"));
+console.log("Get bac:", ht2.get("bac"));
+
+ht2.remove("acb");
+console.log("After removing acb:");
+ht2.print();
+
+
+
 
 // 4. We will skip linear probing because the implementation in the book has
 //    quite a serious bug in it. Can you find the bug (don't spend much time)?
 //    LESSON: Be careful with trusting other people's code.
 
+// the bug in the book's linear probing code is that remove() sets the slot to undefined,
+// which breaks the probe chain and causes future get() and put() operations to fail.
 
 
 </script>

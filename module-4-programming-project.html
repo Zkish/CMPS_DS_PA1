@@ -23,6 +23,52 @@
 console.log("Project");
 
 // 1. Implement the set data structure using the prototype.
+function MySet() {
+  this.items = {};
+  this.size = 0;
+}
+
+MySet.prototype.add = function(value) {
+  if (!this.items.hasOwnProperty(value)) {
+    this.items[value] = value;
+    this.size++;
+  }
+};
+
+MySet.prototype.has = function(value) {
+  return this.items.hasOwnProperty(value);
+};
+
+MySet.prototype.remove = function(value) {
+  if (this.items.hasOwnProperty(value)) {
+    delete this.items[value];
+    this.size--;
+  }
+};
+
+MySet.prototype.values = function() {
+  return Object.values(this.items);
+};
+
+// Set operations
+MySet.prototype.union = function(other) {
+  let result = new MySet();
+  this.values().forEach(v => result.add(v));
+  other.values().forEach(v => result.add(v));
+  return result;
+};
+
+MySet.prototype.intersection = function(other) {
+  let result = new MySet();
+  this.values().forEach(v => {
+    if (other.has(v)) result.add(v);
+  });
+  return result;
+};
+
+MySet.prototype.isSubsetOf = function(other) {
+  return this.values().every(v => other.has(v));
+};
 
 // A professor keeps attendence of classes with the following results:
 // All students: Mary, Joe, Tim, Rosalee, Vincent, Caroline
@@ -32,38 +78,122 @@ console.log("Project");
 
 // 2. Create a set of students for each class.
 
+// All students
+let allStudents = new MySet();
+["Mary", "Joe", "Tim", "Rosalee", "Vincent", "Caroline"].forEach(s => allStudents.add(s));
+
+// Class sets
+let class1 = new MySet();
+["Rosalee", "Joe", "Mary", "Tim"].forEach(s => class1.add(s));
+
+let class2 = new MySet();
+["Mary", "Tim", "Vincent", "Rosalee", "Caroline"].forEach(s => class2.add(s));
+
+let class3 = new MySet();
+["Caroline", "Tim", "Vincent", "Rosalee", "Joe"].forEach(s => class3.add(s));
+
+
 // 3. Use set operations to get a list of students that attended at least
 //    one class.
 
+let attendedAtLeastOne = class1.union(class2).union(class3);
+console.log(attendedAtLeastOne.values());
+
 // 4. Use set operations to get a list of students that attended all classes.
 
+let attendedAll = class1.intersection(class2).intersection(class3);
+console.log(attendedAll.values()); 
+
 // 5. Show that the results for (2) and (3) are a subset of all students.
+
+console.log(attendedAtLeastOne.isSubsetOf(allStudents));   // true
+console.log(attendedAll.isSubsetOf(allStudents));          // true
 
 // 6. Implement the dictionary data structure using the prototype.
 
 function Dictionary() {
-  // ...
+  this.items = {};
 }
+
+Dictionary.prototype.set = function(key, value) {
+  this.items[key] = value;
+};
+
+Dictionary.prototype.get = function(key) {
+  return this.items[key];
+};
+
+Dictionary.prototype.has = function(key) {
+  return this.items.hasOwnProperty(key);
+};
+
+Dictionary.prototype.delete = function(key) {
+  delete this.items[key];
+};
+
+Dictionary.prototype.print = function() {
+  for (let key in this.items) {
+    console.log(key + " - " + this.items[key]);
+  }
+};
 
 // 7. Complete the method below that adds all key-value pairs from one
 //    dictionary into another. See also the example below.
 
 Dictionary.prototype.merge = function(dict) {
   // add all key-value pairs in 'dict' to 'this'
+  for (let key in dict.items) {
+    this.items[key] = dict.items[key];
+  }
 };
 
 // Test your code by uncommenting these lines:
-//var dict1 = new Dictionary();
-//dict1.set("key1", "val1");
-//dict1.set("key2", "val2");
-//dict1.set("key3", "val3");
-//var dict2 = new Dictionary();
-//dict2.set("key3", "val3b");
-//dict2.set("key4", "val4");
-//dict1.merge(dict2);
-//dict1.print(); // should contain key1-val1, key2-val2, key3-val3b, key4-val4
+var dict1 = new Dictionary();
+dict1.set("key1", "val1");
+dict1.set("key2", "val2");
+dict1.set("key3", "val3");
+var dict2 = new Dictionary();
+dict2.set("key3", "val3b");
+dict2.set("key4", "val4");
+dict1.merge(dict2);
+dict1.print(); // should contain key1-val1, key2-val2, key3-val3b, key4-val4
 
 // 8. Implement the hashtable data structure using the prototype.
+
+function HashTable(size = 37) {
+  this.table = new Array(size);
+  this.size = size;
+}
+
+// Simple hash function
+HashTable.prototype.hash = function(key) {
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) {
+    hash += key.charCodeAt(i);
+  }
+  return hash % this.size;
+};
+
+HashTable.prototype.set = function(key, value) {
+  let pos = this.hash(key);
+  this.table[pos] = value;
+};
+
+HashTable.prototype.get = function(key) {
+  return this.table[this.hash(key)];
+};
+
+HashTable.prototype.remove = function(key) {
+  this.table[this.hash(key)] = undefined;
+};
+
+HashTable.prototype.print = function() {
+  for (let i = 0; i < this.table.length; i++) {
+    if (this.table[i] !== undefined) {
+      console.log(i + " : " + this.table[i]);
+    }
+  }
+};
 
 
 
