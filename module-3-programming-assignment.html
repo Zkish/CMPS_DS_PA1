@@ -28,6 +28,9 @@ console.log("The linked list data structure");
 //    is it faster)? If yes, how much faster? If no, why does it take the same
 //    amount of time?
 
+// an array is a lot faster then a linked list as an array will only take one step rather then the linked list 
+// which would take 1000 steps making the array 1000X faster.
+
 
 
 //------------------------//
@@ -39,6 +42,76 @@ console.log("Creating a linked list");
 // book. Instead of using 'let' we use 'var' everywhere. Note that this
 // implementation does not use the prototype (see homework). Here is a skeleton
 // that we will work on completing:
+
+// function LinkedList() {
+
+//   // helper class
+//   function Node(element) {
+//     this.element = element;
+//     this.next = null;
+//   }
+
+//   // store length and head
+//   var length = 0;
+//   var head = null;
+
+//   this.append = function(element) {
+//     // add a new item to the end of the list
+//     // ...
+//   };
+
+//   this.insert = function(position, element) {
+//     // insert a new item at a specific location
+//     // ...
+//   };
+
+//   this.removeAt = function(position) {
+//     // remove an element from a specific location
+//     // ...
+//   };
+
+//   this.remove = function(element) {
+//     // remove a specific element from the list
+//     // ...
+//   };
+
+//   this.indexOf = function(element) {
+//     // return the index of an element in the list
+//     // ...
+//   };
+
+//   this.isEmpty = function() {
+//     // check whether the list is empty
+//     // ...
+//   };
+
+//   this.size = function() {
+//     // return the number of elements in the list
+//     // ...
+//   };
+
+//   this.getHead = function() {
+//     // return head node
+//     // ...
+//   }
+
+//   this.toString = function() {
+//     // overwrite the default toString method
+//     var current = head;
+//     var string = "List: ";
+//     while (current) {
+//       string += current.element + (current.next ? " -> " : "");
+//       current = current.next;
+//     }
+//     return string;
+//   };
+
+//   this.print = function() {
+//     // print to the console
+//     console.log(this.toString());
+//   };
+
+// }
 
 function LinkedList() {
 
@@ -52,48 +125,133 @@ function LinkedList() {
   var length = 0;
   var head = null;
 
+  
+  // Append to the end
+ 
   this.append = function(element) {
-    // add a new item to the end of the list
-    // ...
+    var node = new Node(element);
+    var current;
+
+    if (head === null) {
+      head = node;
+    } else {
+      current = head;
+      while (current.next) {
+        current = current.next;
+      }
+      current.next = node;
+    }
+
+    length++;
   };
 
+ 
+  // Insert at a position
+  
   this.insert = function(position, element) {
-    // insert a new item at a specific location
-    // ...
+    if (position < 0 || position > length) {
+      return false;
+    }
+
+    var node = new Node(element);
+    var current = head;
+    var previous;
+    var index = 0;
+
+    if (position === 0) {
+      node.next = head;
+      head = node;
+    } else {
+      while (index < position) {
+        previous = current;
+        current = current.next;
+        index++;
+      }
+      node.next = current;
+      previous.next = node;
+    }
+
+    length++;
+    return true;
   };
 
+  
+  // Remove at position
+ 
   this.removeAt = function(position) {
-    // remove an element from a specific location
-    // ...
+    if (position < 0 || position >= length) {
+      return null;
+    }
+
+    var current = head;
+    var previous;
+    var index = 0;
+
+    if (position === 0) {
+      head = current.next; // remove first node
+    } else {
+      while (index < position) {
+        previous = current;
+        current = current.next;
+        index++;
+      }
+      previous.next = current.next; // skip node
+    }
+
+    length--;
+    return current.element;
   };
 
+ 
+  // Remove by value
+ 
   this.remove = function(element) {
-    // remove a specific element from the list
-    // ...
+    var index = this.indexOf(element);
+    return this.removeAt(index);
   };
+
+  
+  // Get index of element
 
   this.indexOf = function(element) {
-    // return the index of an element in the list
-    // ...
+    var current = head;
+    var index = 0;
+
+    while (current) {
+      if (current.element === element) {
+        return index;
+      }
+      index++;
+      current = current.next;
+    }
+
+    return -1;
   };
 
+ 
+  // Check if empty
+ 
   this.isEmpty = function() {
-    // check whether the list is empty
-    // ...
+    return length === 0;
   };
 
+ 
+  // Return size
+  
   this.size = function() {
-    // return the number of elements in the list
-    // ...
+    return length;
   };
 
-  this.getHead = function() {
-    // return head node
-    // ...
-  }
 
+  // Return head node
+  
+  this.getHead = function() {
+    return head;
+  };
+
+  
+  // Convert to string
   this.toString = function() {
-    // overwrite the default toString method
     var current = head;
     var string = "List: ";
     while (current) {
@@ -104,7 +262,6 @@ function LinkedList() {
   };
 
   this.print = function() {
-    // print to the console
     console.log(this.toString());
   };
 
@@ -116,22 +273,251 @@ var list = new LinkedList();
 // 1. Write pseudo code (meaning; use comments) to describe how you would
 //    implement the append method. HINT: What two scenarios can you distinguish?
 
+// APPEND PSEUDO CODE:
+//
+// 1. Create a new node with the given element
+// 2. Check if the list is empty (head === null)
+//      - If yes, set head to the new node
+// 3. If the list is NOT empty:
+//      - Start from the head
+//      - Traverse the list until current.next is null
+//      - Set current.next to the new node (attach at the end)
+// 4. Increase length by 1
+
+
 // 2. Translate your pseudo code into actual code and test it.
 //    HINT: Use list.print() to test your code.
+this.append = function(element) {
+
+  // STEP 1: Create a new node with the element
+  var node = new Node(element);
+
+  // STEP 2: If the list is empty, new node becomes the head
+  if (head === null) {
+    head = node;
+  } else {
+
+    // STEP 3: Otherwise, walk the list until current.next is null
+    var current = head;
+
+    while (current.next !== null) {
+      current = current.next;   // move to next node
+    }
+
+    // STEP 4: Attach new node at the end
+    current.next = node;
+  }
+
+  // STEP 5: Increase the list size
+  length++;
+};
+
+var list = new LinkedList();
+
+list.append(10);
+list.append(20);
+list.append(30);
+
+list.print();  
+// Expected: List: 10 -> 20 -> 30
+
 
 // 3. Repeat (1) and (2) for insert.
 
+//1. 
+// INSERT PSEUDO CODE:
+//
+// 1. If position is out of bounds, return false
+// 2. Create a new node (Node(element))
+// 3. If inserting at position 0:
+//      - Set node.next = head
+//      - Set head = node
+// 4. Otherwise:
+//      - Start at head
+//      - Walk the list until reaching the desired position
+//      - Keep track of previous and current
+//      - Insert node between previous and current
+// 5. Increase length
+// 6. Return true
+
+//2. 
+this.insert = function(position, element) {
+  if (position < 0 || position > length) {
+    return false;
+  }
+
+  var node = new Node(element);
+  var current = head;
+  var previous;
+  var index = 0;
+
+  if (position === 0) {
+    node.next = head;
+    head = node;
+  } else {
+    while (index < position) {
+      previous = current;
+      current = current.next;
+      index++;
+    }
+    node.next = current;
+    previous.next = node;
+  }
+
+  length++;
+  return true;
+};
+
+//TEST
+list.insert(1, "X");
+list.print(); 
+
 // 4. Repeat (1) and (2) for removeAt.
+
+//1. // REMOVEAT PSEUDO CODE:
+//
+// 1. If position is out of bounds, return null
+// 2. If removing position 0:
+//      - Set head = head.next
+// 3. Otherwise:
+//      - Walk list until reaching position
+//      - Keep track of previous and current
+//      - Set previous.next = current.next
+// 4. Decrease length
+// 5. Return removed element
+
+
+//2.
+this.removeAt = function(position) {
+  if (position < 0 || position >= length) {
+    return null;
+  }
+
+  var current = head;
+  var previous;
+  var index = 0;
+
+  if (position === 0) {
+    head = current.next;
+  } else {
+    while (index < position) {
+      previous = current;
+      current = current.next;
+      index++;
+    }
+    previous.next = current.next;
+  }
+
+  length--;
+  return current.element;
+};
+
+//TEST
+console.log(list.removeAt(2));
+list.print();
+
 
 // 5. Repeat (1) and (2) for remove.
 
+//1. 
+// REMOVE PSEUDO CODE:
+//
+// 1. Get index of element using indexOf()
+// 2. Use removeAt(index) to remove it
+// 3. Return removed element
+
+//2.
+this.remove = function(element) {
+  var index = this.indexOf(element);
+  return this.removeAt(index);
+};
+
+list.remove("B");
+list.print();
+
 // 6. Repeat (1) and (2) for indexOf.
+
+//1.
+// INDEXOF PSEUDO CODE:
+//
+// 1. Start at head
+// 2. Loop through list
+// 3. If current.element matches target, return index
+// 4. Otherwise keep going
+// 5. If not found, return -1
+
+
+//2.
+this.indexOf = function(element) {
+  var current = head;
+  var index = 0;
+
+  while (current) {
+    if (current.element === element) {
+      return index;
+    }
+    current = current.next;
+    index++;
+  }
+
+  return -1;
+};
+
+//test
+console.log(list.indexOf("C"));
+
+
 
 // 7. Repeat (1) and (2) for isEmpty.
 
+//1.
+// ISEMPTY PSEUDO CODE:
+//
+// 1. Return true if length == 0
+
+//2.
+this.isEmpty = function() {
+  return length === 0;
+};
+
+//test
+console.log(list.isEmpty());
+
 // 8. Repeat (1) and (2) for size.
 
+//1.
+// SIZE PSEUDO CODE:
+//
+// 1. Return the length variable
+
+
+//2.
+this.size = function() {
+  return length;
+};
+
+
+//test
+console.log(list.size());
+
+
 // 9. Repeat (1) and (2) for getHead.
+
+//1.
+// GETHEAD PSEUDO CODE:
+//
+// 1. Return the head node
+
+
+//2.
+this.getHead = function() {
+  return head;
+};
+
+
+//test
+console.log(list.getHead());
+
 
 
 
