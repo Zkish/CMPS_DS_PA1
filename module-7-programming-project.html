@@ -23,24 +23,199 @@
 console.log("Project");
 
 // 1. Implement factorial using a recursive function and test your code.
+// Constructor
+function MathUtils() {}
+
+MathUtils.prototype.factorial = function(n) {
+  if (n < 0) return null;        // guard against invalid input
+  if (n === 0 || n === 1) return 1;
+  return n * this.factorial(n - 1);
+};
+
+//TEST
+
+var math = new MathUtils();
+
+console.log(math.factorial(0)); // 1
+console.log(math.factorial(1)); // 1
+console.log(math.factorial(5)); // 120
+console.log(math.factorial(7)); // 5040
+console.log(math.factorial(-3)); // null
 
 // 2. Implement a function that returns the complete fibonacci sequence in an
 //    array for a given number.
 
+MathUtils.prototype.fibonacci = function(n) {
+  if (n <= 0) return [];
+
+  if (n === 1) return [0];
+
+  var sequence = [0, 1];
+
+  for (var i = 2; i < n; i++) {
+    sequence[i] = sequence[i - 1] + sequence[i - 2];
+  }
+
+  return sequence;
+};
+
+//TEST
+var math = new MathUtils();
+console.log(math.fibonacci(1)); 
+console.log(math.fibonacci(2)); 
+console.log(math.fibonacci(5)); 
+console.log(math.fibonacci(10)); 
+
+
 // 3. Implement finding the longest common subsequence using dynamic
 //    programming. Test your code.
+
+// Constructor
+function StringUtils() {}
+
+StringUtils.prototype.longestCommonSubsequence = function(str1, str2) {
+  var m = str1.length;
+  var n = str2.length;
+
+  
+  var dp = new Array(m + 1);
+  for (var i = 0; i <= m; i++) {
+    dp[i] = new Array(n + 1).fill(0);
+  }
+
+  
+  for (var i = 1; i <= m; i++) {
+    for (var j = 1; j <= n; j++) {
+      if (str1[i - 1] === str2[j - 1]) {
+        dp[i][j] = dp[i - 1][j - 1] + 1;
+      } else {
+        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+      }
+    }
+  }
+
+  var i = m;
+  var j = n;
+  var lcs = [];
+
+  while (i > 0 && j > 0) {
+    if (str1[i - 1] === str2[j - 1]) {
+      lcs.unshift(str1[i - 1]);
+      i--;
+      j--;
+    } else if (dp[i - 1][j] > dp[i][j - 1]) {
+      i--;
+    } else {
+      j--;
+    }
+  }
+
+  return lcs.join("");
+};
+
+//TEST
+var utils = new StringUtils();
+
+console.log(utils.longestCommonSubsequence("AGGTAB", "GXTXAYB")); 
+console.log(utils.longestCommonSubsequence("ABCBDAB", "BDCABA")); 
+console.log(utils.longestCommonSubsequence("abcdef", "acf")); 
+console.log(utils.longestCommonSubsequence("abc", "def"));
 
 // 4. Solve the problem of summing all the numbers in an array using
 //    imperative style.
 
+// Constructor
+function ArrayUtils() {}
+
+ArrayUtils.prototype.sumArrayImperative = function(arr) {
+  var sum = 0;
+
+  for (var i = 0; i < arr.length; i++) {
+    sum += arr[i];
+  }
+
+  return sum;
+};
+
+//TEST
+
+var utils = new ArrayUtils();
+console.log("sum of array using imperative style")
+console.log(utils.sumArrayImperative([1, 2, 3, 4, 5])); 
+console.log(utils.sumArrayImperative([10, -2, 7]));    
+console.log(utils.sumArrayImperative([]));             
+
 // 5. Solve the problem of summing all the numbers in an array using
 //    functional style.
+// Constructor
+function ArrayUtils() {}
+
+ArrayUtils.prototype.sumArrayFunctional = function(arr) {
+  return arr.reduce(function(acc, value) {
+    return acc + value;
+  }, 0);
+};
+
+//TEST
+var utils = new ArrayUtils();
+console.log("sum of array using functional style")
+console.log(utils.sumArrayFunctional([1, 2, 3, 4, 5]));
+console.log(utils.sumArrayFunctional([10, -2, 7]));    
+console.log(utils.sumArrayFunctional([]));            
 
 // 6. Solve problem 14 of Project Euler: https://projecteuler.net/problem=14
 //    Note: This may be a bit challenging. Try to get as far as you can.
 //          Instead of one million you could use a smaller number for testing.
 
+// Constructor
+function CollatzUtils() {
+  // Memoization table: number - chain length
+  this.memo = { 1: 1 };
+}
 
+// Prototype method to compute Collatz chain length
+CollatzUtils.prototype.getChainLength = function(n) {
+  if (this.memo[n]) {
+    return this.memo[n];
+  }
+
+  var next;
+  if (n % 2 === 0) {
+    next = n / 2;
+  } else {
+    next = 3 * n + 1;
+  }
+
+  this.memo[n] = 1 + this.getChainLength(next);
+  return this.memo[n];
+};
+
+// Prototype method to find the longest chain under a limit
+CollatzUtils.prototype.findLongestChainUnder = function(limit) {
+  var maxLength = 0;
+  var maxNumber = 1;
+
+  for (var i = 1; i < limit; i++) {
+    var length = this.getChainLength(i);
+
+    if (length > maxLength) {
+      maxLength = length;
+      maxNumber = i;
+    }
+  }
+
+  return {
+    startingNumber: maxNumber,
+    chainLength: maxLength
+  };
+};
+
+
+// Run the solution
+var collatz = new CollatzUtils();
+
+var result = collatz.findLongestChainUnder(1000000);
+console.log(result);
 
 </script>
 </head>
