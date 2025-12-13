@@ -132,7 +132,18 @@ tree.insert(11);
 tree.insert(7);
 tree.insert(15);
 // copy rest from book
-tree.print();
+tree.insert(5);
+tree.insert(3);
+tree.insert(9);
+tree.insert(8);
+tree.insert(10);
+tree.insert(13);
+tree.insert(12);
+tree.insert(14);
+tree.insert(20);
+tree.insert(18);
+tree.insert(25);
+tree.insert(6);
 
 
 
@@ -149,14 +160,151 @@ function printNode(value) {
 //    printNode() function given above.
 //    NOTE: in-order means all keys are visited in sorted order.
 
+  let root = null;
+// No-prototype Binary Search Tree
+  function BinarySearchTree() {
+  function Node(key) {
+    this.key = key;
+    this.left = null;
+    this.right = null;
+  }
+
+  let root = null;
+
+  // Insert method
+  this.insert = function(key) {
+    const newNode = new Node(key);
+
+    const insertNode = function(node, newNode) {
+      if (newNode.key < node.key) {
+        if (node.left === null) {
+          node.left = newNode;
+        } else {
+          insertNode(node.left, newNode);
+        }
+      } else {
+        if (node.right === null) {
+          node.right = newNode;
+        } else {
+          insertNode(node.right, newNode);
+        }
+      }
+    };
+
+    if (root === null) {
+      root = newNode;
+    } else {
+      insertNode(root, newNode);
+    }
+  };
+
+  // In-order traversal
+  this.inOrderTraverse = function(callback) {
+    const inOrder = function(node) {
+      if (node !== null) {
+        inOrder(node.left);
+        callback(node.key);
+        inOrder(node.right);
+      }
+    };
+    inOrder(root);
+  };
+
+  // Pre-order traversal
+  this.preOrderTraverse = function(callback) {
+    const preOrder = function(node) {
+      if (node !== null) {
+        callback(node.key);
+        preOrder(node.left);
+        preOrder(node.right);
+      }
+    };
+    preOrder(root);
+  };
+
+  // Post-order traversal
+  this.postOrderTraverse = function(callback) {
+    const postOrder = function(node) {
+      if (node !== null) {
+        postOrder(node.left);
+        postOrder(node.right);
+        callback(node.key);
+      }
+    };
+    postOrder(root);
+  };
+
+  // min method: returns minimum key
+  this.min = function() {
+    let node = root;
+    if (node === null) return null; // empty tree
+    while (node.left !== null) {
+      node = node.left;
+    }
+    return node.key;
+  };
+
+  // max method: returns maximum key
+  this.max = function() {
+    let node = root;
+    if (node === null) return null; // empty tree
+    while (node.right !== null) {
+      node = node.right;
+    }
+    return node.key;
+  };
+
+  // search method: returns true if key exists, false otherwise
+  this.search = function(key) {
+    const searchNode = function(node, key) {
+      if (node === null) return false;
+      if (key < node.key) return searchNode(node.left, key);
+      else if (key > node.key) return searchNode(node.right, key);
+      else return true; // key === node.key
+    };
+    return searchNode(root, key);
+  };
+
+  // Print the tree (simple in-order)
+  this.print = function() {
+    this.inOrderTraverse(console.log);
+  };
+}
+
+// Build tree
+var tree = new BinarySearchTree();
+tree.insert(11);
+tree.insert(7);
+tree.insert(15);
+tree.insert(5);
+tree.insert(3);
+tree.insert(9);
+tree.insert(8);
+tree.insert(10);
+tree.insert(13);
+tree.insert(12);
+tree.insert(14);
+tree.insert(20);
+tree.insert(18);
+tree.insert(25);
+tree.insert(6);
+
+// Test in-order traversal
+console.log("In-order traversal:");
+tree.inOrderTraverse(printNode);
+
 // 2. Implement pre-order traversal. Test your implementation with the
 //    printNode() function given above.
 //    NOTE: pre-order means a node is visited prior to its descendants.
+console.log("Pre-order traversal:");
+tree.preOrderTraverse(printNode);
+
 
 // 3. Implement post-order traversal. Test your implementation with the
 //    printNode() function given above.
 //    NOTE: pre-order means a node is visited after its descendants.
-
+console.log("Post-order traversal:");
+tree.postOrderTraverse(printNode);
 
 
 //--------------------------------//
@@ -165,11 +313,13 @@ function printNode(value) {
 console.log("Searching for values in a tree");
 
 // 1. Implement the min method above and show that it works.
+console.log("Minimum key:", tree.min());
 
 // 2. Implement the max method above and show that it works.
-
+console.log("Maximum key:", tree.max());
 // 3. Implement the search method above and show that it works.
-
+console.log("Search 10:", tree.search(10));
+console.log("Search 17:", tree.search(17));
 
 
 //--------------------------//
@@ -179,7 +329,87 @@ console.log("Creating the Graph class");
 
 // 1. Implement the Graph class.
 
+// No-prototype Graph class
+function Graph() {
+  let vertices = {}; 
+
+  // Add vertex
+  this.addVertex = function(v) {
+    if (!vertices[v]) {
+      vertices[v] = [];
+    }
+  };
+
+  // Add edge
+  this.addEdge = function(v, w) {
+    if (!vertices[v]) this.addVertex(v);
+    if (!vertices[w]) this.addVertex(w);
+    vertices[v].push(w);
+  };
+
+  // Print adjacency list
+  this.print = function() {
+    for (let v in vertices) {
+      console.log(v + " -> " + vertices[v].join(", "));
+    }
+  };
+
+  // ---------------------------
+  // Breadth-First Search
+  this.bfs = function(startVertex, callback) {
+    let visited = {};
+    let queue = [];
+
+    visited[startVertex] = true;
+    queue.push(startVertex);
+
+    while (queue.length > 0) {
+      let vertex = queue.shift();
+      callback(vertex);
+
+      vertices[vertex].forEach(function(neighbor) {
+        if (!visited[neighbor]) {
+          visited[neighbor] = true;
+          queue.push(neighbor);
+        }
+      });
+    }
+  };
+
+  // Depth-First Search recursive
+  this.dfs = function(startVertex, callback) {
+    let visited = {};
+
+    const dfsVisit = (vertex) => {
+      visited[vertex] = true;
+      callback(vertex);
+
+      vertices[vertex].forEach((neighbor) => {
+        if (!visited[neighbor]) {
+          dfsVisit(neighbor);
+        }
+      });
+    };
+
+    dfsVisit(startVertex);
+  };
+}
+
 // 2. Test the Graph class with the example from the book.
+var graph = new Graph();
+
+// Add vertices and edges 
+graph.addVertex("A");
+graph.addVertex("B");
+graph.addVertex("C");
+graph.addVertex("D");
+
+graph.addEdge("A", "B");
+graph.addEdge("A", "C");
+graph.addEdge("B", "D");
+graph.addEdge("C", "D");
+
+graph.print()
 
 
 
@@ -189,8 +419,12 @@ console.log("Creating the Graph class");
 console.log("Graph traversals");
 
 // 1. Implement breadth-first search in the Graph class above.
+console.log("Breadth-First Search (BFS) from A:");
+graph.bfs("A", printNode);
 
 // 2. Implement depth-first search in the Graph class above.
+console.log("Depth-First Search (DFS) from A:");
+graph.dfs("A", printNode);
 
 
 
