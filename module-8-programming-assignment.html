@@ -25,6 +25,20 @@ console.log("Big O notation");
 // 1. Analyze the complexity of the isPalindrome function below. Make a
 //    distinction between best, worst, and average case complexity.
 
+//BEST case O(1)
+// - the first comparison fails 
+// - the function immediatley exits on the first iteration
+// - constant time
+
+// WORST case O(n)
+// - the string is a palendrome, example "racecar", or the mismatch happens at the very end
+// - the loop runs n / 2 times
+// - Big O ingnores constants -> O(n)
+
+//AVERAGE case O(n)
+// - on average the fucntion will check a significant portion of the string before finding a mismatch (or none at all)
+// still proportional to the input size
+
 function isPalindrome(str) {
   for (var i = 0; i < str.length/2; i++) {
     if (str[i] !== str[str.length-i-1]) {
@@ -39,6 +53,60 @@ function isPalindrome(str) {
 //    the stack but that leads to an O(n) solution.
 //    NOTE: this question is sometimes asked on interviews.
 
+function Stack() {
+  let items = [];
+  let minStack = [];
+
+  this.push = function(element) {
+    items.push(element);
+
+    if (minStack.length === 0 || element <= minStack[minStack.length - 1]) {
+      minStack.push(element);
+    }
+  };
+
+  this.pop = function() {
+    if (items.length === 0) return undefined;
+
+    const removed = items.pop();
+
+    if (removed === minStack[minStack.length - 1]) {
+      minStack.pop();
+    }
+
+    return removed;
+  };
+
+  this.peek = function() {
+    return items[items.length - 1];
+  };
+
+  this.getMin = function() {
+    return minStack[minStack.length - 1];
+  };
+
+  this.isEmpty = function() {
+    return items.length === 0;
+  };
+
+  this.size = function() {
+    return items.length;
+  };
+}
+
+//TEST
+const stack = new Stack();
+
+stack.push(5);
+stack.push(3);
+stack.push(7);
+stack.push(2);
+
+console.log(stack.getMin()); 
+
+stack.pop(); 
+console.log(stack.getMin());
+
 
 
 //----------------------------//
@@ -48,7 +116,45 @@ console.log("Having fun with algorithms");
 
 // 1. Solve Project Euler problem 1 (https://projecteuler.net/problem=1).
 
+function sumMultiplesOf3And5(limit) {
+  let sum = 0;
+
+  for (let i = 1; i < limit; i++) {
+    if (i % 3 === 0 || i % 5 === 0) {
+      sum += i;
+    }
+  }
+
+  return sum;
+}
+
+// TEST
+console.log("problem #1:")
+console.log(sumMultiplesOf3And5(1000));
+
 // 2. Solve Project Euler problem 2 (https://projecteuler.net/problem=2).
+
+function sumEvenFibonacci(limit) {
+  let sum = 0;
+  let a = 1;
+  let b = 2;
+
+  while (a <= limit) {
+    if (a % 2 === 0) {
+      sum += a;
+    }
+
+    const next = a + b;
+    a = b;
+    b = next;
+  }
+
+  return sum;
+}
+
+// TEST
+console.log("problem #2")
+console.log(sumEvenFibonacci(4000000));
 
 
 

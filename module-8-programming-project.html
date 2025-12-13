@@ -24,6 +24,8 @@ console.log("Project");
 
 // 1. What is the worst case complexity of the following function?
 
+// the worst case is that there are no duplicates , so every comparison runs O(n^2)
+
 function hasDuplicates(arr) {
   for (var i = 0; i < arr.length; i++) {
     for (var j = 0; j < arr.length; j++) {
@@ -38,8 +40,22 @@ function hasDuplicates(arr) {
 // 2. Implement a faster version of the same function and analyze the
 //    complexity of this approach.
 
+// the faster version of the same function uses a hash table instead of the original which was using nested looops.
+// the array is scanned once
+// object property are O(1) average
+
 function hasDuplicatesFast(arr) {
   // todo
+    var seen = {};
+
+  for (var i = 0; i < arr.length; i++) {
+    if (seen[arr[i]]) {
+      return true;
+    }
+    seen[arr[i]] = true;
+  }
+
+  return false;
 }
 
 // 3. The travelling salesman problem is a another classic problem and we are
@@ -57,12 +73,109 @@ function hasDuplicatesFast(arr) {
 //        the cities.
 //    (c) Check your results, do they make sense? Is is the optimal solution?
 
+//PartA
+// Graph distances
+const distances = {
+  A: { A: 0, B: 10, C: 15, D: 20 },
+  B: { A: 10, B: 0, C: 35, D: 25 },
+  C: { A: 15, B: 35, C: 0, D: 30 },
+  D: { A: 20, B: 25, C: 30, D: 0 }
+};
+
+//PartB
+function greedyTSP(distances, start) {
+  const visitedOrder = [start];
+  const cities = Object.keys(distances);
+  const visited = {};
+  visited[start] = true;
+
+  let current = start;
+  let totalDistance = 0;
+
+  while (visitedOrder.length < cities.length) {
+    let nextCity = null;
+    let shortest = Infinity;
+
+    for (let neighbor of cities) {
+      if (!visited[neighbor] && distances[current][neighbor] < shortest) {
+        shortest = distances[current][neighbor];
+        nextCity = neighbor;
+      }
+    }
+
+    visited[nextCity] = true;
+    totalDistance += shortest;
+    visitedOrder.push(nextCity);
+    current = nextCity;
+  }
+
+  // Return to start
+  totalDistance += distances[current][start];
+  visitedOrder.push(start);
+
+  return { route: visitedOrder, length: totalDistance };
+}
+
+//PartC
+const result = greedyTSP(distances, "A");
+console.log("Route:", result.route);
+console.log("Total length:", result.length); 
+
+// the results make sense although utilizing the greedy nearest neighbor approach is not guarenteed to b e the shortest possible tour.
+// the true optimal solution would require checking all permutations / factorial time, or by using more advanced optimizations.
+
 // 4. Solve https://csacademy.com/contest/interview-archive/task/intersecting-rectangles/
 //    What is the runtime complexity of your solution?
 //    HINT: Try to break down the problems into smaller steps. For example,
 //          find a convenient way to represent rectangles and define a function
 //          that tests whether one rectangle is inside another. Then test your
 //          code on just two rectangles first to make sure it works.
+
+// represent each rectangle
+function Rectangle(x1, y1, x2, y2) {
+  this.x1 = x1;
+  this.y1 = y1;
+  this.x2 = x2;
+  this.y2 = y2;
+}
+// fucntion to test if two rectangles intersect
+function intersects(r1, r2) {
+  const xOverlap = Math.min(r1.x2, r2.x2) > Math.max(r1.x1, r2.x1);
+  const yOverlap = Math.min(r1.y2, r2.y2) > Math.max(r1.y1, r2.y1);
+  return xOverlap && yOverlap;
+}
+
+// count all intersecting pairs
+function countIntersectingPairs(rectangles) {
+  let count = 0;
+  const n = rectangles.length;
+
+  for (let i = 0; i < n; i++) {
+    for (let j = i + 1; j < n; j++) {
+      if (intersects(rectangles[i], rectangles[j])) {
+        count++;
+      }
+    }
+  }
+
+  return count;
+}
+
+// TESTING
+const rectangles1 = [
+  new Rectangle(1, 1, 7, 10),
+  new Rectangle(3, 5, 10, 8)
+];
+
+console.log(countIntersectingPairs(rectangles1)); 
+
+const rectangles2 = [
+  new Rectangle(3, 2, 5, 8),
+  new Rectangle(7, 3, 10, 10)
+];
+
+console.log(countIntersectingPairs(rectangles2));
+
 
 
 
